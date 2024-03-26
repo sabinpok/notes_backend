@@ -1,5 +1,4 @@
-node_modules
-dist/
+dist
 .env
 .vscode/
 creating_new_note.rest
@@ -8,3 +7,4 @@ get_all_notes.rest
 fly.toml
 Dockerfile
 .dockerignore
+node_modules/
