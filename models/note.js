@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 mongoose.set("strictQuery", false);
 
 // Automatically grabs the third argument from the command line
-const password = process.argv[2];
+// const password = process.argv[2];
 
 // URL to connect to the MongoDB database
 const url = process.env.MONGODB_URI;
