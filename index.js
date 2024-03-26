@@ -61,44 +61,40 @@ app.get("/api/notes", (request, response) => {
 });
 
 // Function to generate a new id for a note
-const generateId = () => {
-  const maxId = notes.length > 0 ? Math.max(...notes.map((n) => n.id)) : 0;
-  return maxId + 1;
-};
+// const generateId = () => {
+//   const maxId = notes.length > 0 ? Math.max(...notes.map((n) => n.id)) : 0;
+//   return maxId + 1;
+// };
 
 // Route to create a new note
 app.post("/api/notes", (request, response) => {
   const body = request.body;
 
   // Check if the content field is missing
-  if (!body.content) {
+  if (body.content === undefined || !body.content) {
     return response.status(400).json({
       error: "content missing",
     });
   }
 
   // Create a new note object
-  const note = {
+  const note = new Note({
     content: body.content,
     important: body.important || false,
-    id: generateId(),
-  };
+  });
 
-  notes = notes.concat(note); // Add the new note to the notes array
-
-  response.json(note);
+  // Add the new note object to the notes database
+  note.save().then((savedNote) => {
+    response.json(savedNote);
+  });
 });
 
 // Route to get a single note
 app.get("/api/notes/:id", (request, response) => {
-  const id = Number(request.params.id);
-  const note = notes.find((note) => note.id === id);
-  if (note) {
+  // Mongoose .findById method finds a single document by its _id field
+  Note.findById(request.params.id).then((note) => {
     response.json(note);
-  } else {
-    console.log("x");
-    response.status(404).end();
-  }
+  });
 });
 
 // Route to delete a single note
