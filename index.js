@@ -48,6 +48,17 @@ const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: "unknown endpoint" });
 };
 
+// Middleware function to handle errors
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message);
+
+  if (error.name === "CastError") {
+    return response.status(400).send({ error: "malformatted id" });
+  }
+
+  next(error);
+};
+
 // Route to get the root of the application
 app.get("/", (request, response) => {
   response.send("<h1>Hello World!</h1>");
@@ -90,7 +101,7 @@ app.post("/api/notes", (request, response) => {
 });
 
 // Route to get a single note
-app.get("/api/notes/:id", (request, response) => {
+app.get("/api/notes/:id", (request, response, next) => {
   // Mongoose .findById method finds a single document by its _id field
   Note.findById(request.params.id)
     .then((note) => {
@@ -104,10 +115,7 @@ app.get("/api/notes/:id", (request, response) => {
     })
     // Must include a catch method to handle malformed ids
     // Runs if the promise returned by the .findById method is rejected
-    .catch((error) => {
-      console.log(error); // Log the error to the console helps in debugging
-      response.status(400).send({ error: "malformatted id" });
-    });
+    .catch((error) => next(error));
 });
 
 // Route to delete a single note
@@ -119,6 +127,9 @@ app.delete("/api/notes/:id", (request, response) => {
 });
 
 app.use(unknownEndpoint);
+
+// Must be last loaded middleware to catch all errors
+app.use(errorHandler);
 
 // Define the port the application will listen on
 const PORT = process.env.PORT;
