@@ -7,8 +7,8 @@ const password = process.argv[2];
 // URL to connect to the MongoDB database
 const url = process.env.MONGODB_URI;
 console.log("connecting to", url);
-// Connect to the MongoDB database
 
+// Connect to the MongoDB database
 mongoose
   .connect(url)
   .then(() => {
@@ -23,6 +23,8 @@ const noteSchema = new mongoose.Schema({
   content: String,
   important: Boolean,
 });
+
+// Transform the object returned by Mongoose
 noteSchema.set("toJSON", {
   transform: (document, returnedObject) => {
     returnedObject.id = returnedObject._id.toString();
