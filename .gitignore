@@ -1,10 +1,9 @@
 dist
 .env
 .vscode/
-creating_new_note.rest
-delete_note.rest
-get_all_notes.rest
 fly.toml
 Dockerfile
 .dockerignore
 node_modules/
+dist/
+.vscode/
