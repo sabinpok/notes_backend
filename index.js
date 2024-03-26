@@ -92,9 +92,22 @@ app.post("/api/notes", (request, response) => {
 // Route to get a single note
 app.get("/api/notes/:id", (request, response) => {
   // Mongoose .findById method finds a single document by its _id field
-  Note.findById(request.params.id).then((note) => {
-    response.json(note);
-  });
+  Note.findById(request.params.id)
+    .then((note) => {
+      // If the note is found, return it
+      if (note) {
+        response.json(note);
+      } else {
+        // If the note is not found, return a 404 status code
+        response.status(404).end();
+      }
+    })
+    // Must include a catch method to handle malformed ids
+    // Runs if the promise returned by the .findById method is rejected
+    .catch((error) => {
+      console.log(error); // Log the error to the console helps in debugging
+      response.status(400).send({ error: "malformatted id" });
+    });
 });
 
 // Route to delete a single note
