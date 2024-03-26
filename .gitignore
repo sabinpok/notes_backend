@@ -4,3 +4,8 @@
 .env
 Dockerfile
 fly.toml
+get_all_notes.rest
+creating_new_note.rest
+delete_note.rest
+/.vscode
+/.dist
