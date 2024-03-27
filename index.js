@@ -1,35 +1,11 @@
-// Purpose: This file is the entry point of the application. It contains the server configuration and the routes for the application.
-require("dotenv").config(); // This line is used to read the environment variables from the .env file
-
-// Import the express module
 const express = require("express");
 const app = express();
+require("dotenv").config();
 
-// Import the Note model
 const Note = require("./models/note");
 
-let notes = [
-  {
-    id: 1,
-    content: "HTML is easy",
-    important: true,
-  },
-  {
-    id: 2,
-    content: "Browser can execute only JavaScript",
-    important: false,
-  },
-  {
-    id: 3,
-    content: "GET and POST are the most important methods of HTTP protocol",
-    important: true,
-  },
-];
-
-// Serve the static files in the dist directory
 app.use(express.static("dist"));
 
-// Middleware functions
 const requestLogger = (request, response, next) => {
   console.log("Method:", request.method);
   console.log("Path:  ", request.path);
@@ -38,17 +14,6 @@ const requestLogger = (request, response, next) => {
   next();
 };
 
-const cors = require("cors");
-app.use(cors());
-app.use(express.json());
-app.use(requestLogger);
-
-// Middleware function to handle unknown endpoints
-const unknownEndpoint = (request, response) => {
-  response.status(404).send({ error: "unknown endpoint" });
-};
-
-// Middleware function to handle errors
 const errorHandler = (error, request, response, next) => {
   console.error(error.message);
 
@@ -59,79 +24,81 @@ const errorHandler = (error, request, response, next) => {
   next(error);
 };
 
-// Route to get the root of the application
+const cors = require("cors");
+
+app.use(cors());
+app.use(express.json());
+app.use(requestLogger);
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: "unknown endpoint" });
+};
+
 app.get("/", (request, response) => {
   response.send("<h1>Hello World!</h1>");
 });
 
-// Route to get all notes
 app.get("/api/notes", (request, response) => {
   Note.find({}).then((notes) => {
     response.json(notes);
   });
 });
 
-// Function to generate a new id for a note
-// const generateId = () => {
-//   const maxId = notes.length > 0 ? Math.max(...notes.map((n) => n.id)) : 0;
-//   return maxId + 1;
-// };
-
-// Route to create a new note
 app.post("/api/notes", (request, response) => {
   const body = request.body;
 
-  // Check if the content field is missing
-  if (body.content === undefined || !body.content) {
-    return response.status(400).json({
-      error: "content missing",
-    });
+  if (body.content === undefined) {
+    return response.status(400).json({ error: "content missing" });
   }
 
-  // Create a new note object
   const note = new Note({
     content: body.content,
     important: body.important || false,
   });
 
-  // Add the new note object to the notes database
   note.save().then((savedNote) => {
     response.json(savedNote);
   });
 });
 
-// Route to get a single note
 app.get("/api/notes/:id", (request, response, next) => {
-  // Mongoose .findById method finds a single document by its _id field
   Note.findById(request.params.id)
     .then((note) => {
-      // If the note is found, return it
       if (note) {
         response.json(note);
       } else {
-        // If the note is not found, return a 404 status code
         response.status(404).end();
       }
     })
-    // Must include a catch method to handle malformed ids
-    // Runs if the promise returned by the .findById method is rejected
     .catch((error) => next(error));
 });
 
-// Route to delete a single note
-app.delete("/api/notes/:id", (request, response) => {
-  const id = Number(request.params.id);
-  notes = notes.filter((note) => note.id !== id);
+app.delete("/api/notes/:id", (request, response, next) => {
+  Note.findByIdAndDelete(request.params.id)
+    .then((result) => {
+      response.status(204).end();
+    })
+    .catch((error) => next(error));
+});
 
-  response.status(204).end();
+app.put("/api/notes/:id", (request, response, next) => {
+  const body = request.body;
+  console.log(body, "body");
+  const note = {
+    content: body.content,
+    important: body.important,
+  };
+
+  Note.findByIdAndUpdate(request.params.id, note, { new: true })
+    .then((updatedNote) => {
+      response.json(updatedNote);
+    })
+    .catch((error) => next(error));
 });
 
 app.use(unknownEndpoint);
-
-// Must be last loaded middleware to catch all errors
 app.use(errorHandler);
 
-// Define the port the application will listen on
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

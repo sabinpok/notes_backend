@@ -1,0 +1,7 @@
+PUT http://localhost:3001/api/notes/66030706d00c684221ef9836
+
+Content-Type: application/json
+{
+    "content": "Still learning Mongoose",
+    "important": false
+}
