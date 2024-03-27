@@ -83,10 +83,9 @@ app.delete("/api/notes/:id", (request, response, next) => {
 
 app.put("/api/notes/:id", (request, response, next) => {
   const body = request.body;
-  console.log(body, "body");
   const note = {
     content: body.content,
-    important: body.important,
+    important: body.important || false,
   };
 
   Note.findByIdAndUpdate(request.params.id, note, { new: true })
