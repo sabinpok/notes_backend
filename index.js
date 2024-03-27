@@ -25,6 +25,8 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === "CastError") {
     return response.status(400).send({ error: "malformatted id" });
+  } else if (error.name === "ValidationError") {
+    return response.status(400).json({ error: error.message });
   }
 
   next(error);
@@ -56,12 +58,8 @@ app.get("/api/notes", (request, response) => {
 });
 
 // Route handler to create a new note
-app.post("/api/notes", (request, response) => {
+app.post("/api/notes", (request, response, next) => {
   const body = request.body;
-
-  if (body.content === undefined) {
-    return response.status(400).json({ error: "content missing" });
-  }
 
   // Create a new note object from the request body
   const note = new Note({
@@ -70,9 +68,12 @@ app.post("/api/notes", (request, response) => {
   });
 
   // Save the note object to the database
-  note.save().then((savedNote) => {
-    response.json(savedNote);
-  });
+  note
+    .save()
+    .then((savedNote) => {
+      response.json(savedNote);
+    })
+    .catch((error) => next(error)); // passes error to the error handler if any exceptions occur
 });
 
 // Route handler to get a single note by ID
@@ -101,17 +102,18 @@ app.delete("/api/notes/:id", (request, response, next) => {
 
 // Route handler to update a note by ID
 app.put("/api/notes/:id", (request, response, next) => {
-  const body = request.body;
   // Create an object that IS NOT a mongoose object with the updated note
-  const note = {
-    content: body.content,
-    important: body.important || false,
-  };
+  const { content, important } = request.body;
 
-  // findByIdAndUpdate method receives a regular JS object as the second argument
-  // findByIdAndUpdate also would return the original document to updatedNote, not the updated one,
-  // so we use the { new: true } option to call event handler with the updated document
-  Note.findByIdAndUpdate(request.params.id, note, { new: true })
+  /* findByIdAndUpdate method receives a regular JS object as the second argument
+  findByIdAndUpdate also would return the original document to updatedNote, not the updated one,
+  so we use the { new: true } option to call event handler with the updated document.
+  runValidators option is set to true to ensure that the update operation also validates the updated document */
+  Note.findByIdAndUpdate(
+    request.params.id,
+    { content, important },
+    { new: true, runValidators: true, context: "query" }
+  )
     .then((updatedNote) => {
       response.json(updatedNote);
     })

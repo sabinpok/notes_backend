@@ -17,7 +17,12 @@ mongoose
 
 // Defining the schema for the Note model
 const noteSchema = new mongoose.Schema({
-  content: String,
+  content: {
+    // Define specific validation rules for the content field
+    type: String,
+    minLength: 5,
+    required: true,
+  },
   important: Boolean,
 });
 
