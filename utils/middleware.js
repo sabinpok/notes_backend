@@ -1,3 +1,7 @@
+/*
+    Contains all the custom middleware functions.
+*/
+
 const logger = require("./logger");
 
 const requestLogger = (request, response, next) => {

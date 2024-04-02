@@ -1,3 +1,8 @@
+/* 
+    This file is used to store the handling of environmental variables.
+    Other modules can import this file to access the environment variables.
+*/
+
 require("dotenv").config();
 
 let PORT = process.env.PORT;

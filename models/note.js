@@ -1,3 +1,7 @@
+/*
+  Defines the Mongoose schema for the Note model.
+*/
+
 const mongoose = require("mongoose");
 
 const noteSchema = new mongoose.Schema({

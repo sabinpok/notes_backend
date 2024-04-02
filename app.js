@@ -1,8 +1,13 @@
+/*
+    Creates the actual application, taking different middleware into use.
+    Has responsibility for connecting to the database.
+*/
+
 const config = require("./utils/config");
 const express = require("express");
 const app = express();
 const cors = require("cors");
-const notesRouter = require("./controllers/notes");
+const notesRouter = require("./controllers/notes"); // Must only define relative parts of routes
 const middleware = require("./utils/middleware");
 const logger = require("./utils/logger");
 const mongoose = require("mongoose");
@@ -25,7 +30,7 @@ app.use(express.static("dist"));
 app.use(express.json());
 app.use(middleware.requestLogger);
 
-app.use("/api/notes", notesRouter);
+app.use("/api/notes", notesRouter); // Note the path here
 
 app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);

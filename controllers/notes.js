@@ -1,3 +1,12 @@
+/*
+    Contains all the routers for the notes.
+    The shortened paths in the route handlers are possible from the
+    Router object. The Router object is created with the express.Router()
+    function and is a middleware that can be used for defining 
+    related routes.
+*/
+
+// Create a new router object
 const notesRouter = require("express").Router();
 const Note = require("../models/note");
 
@@ -58,4 +67,13 @@ notesRouter.put("/:id", (request, response, next) => {
     .catch((error) => next(error));
 });
 
-module.exports = notesRouter;
+/*
+    There is just one "thing" exported from this module, which is the router.
+    The only way to use it is"
+        - const notesRouter = require("./controllers/notes");
+        - app.use("/api/notes", notesRouter);
+    
+    The exported "thing" is assigned to a variable and used as such.
+*/
+
+module.exports = notesRouter; // Export the router for all consumers of this module
