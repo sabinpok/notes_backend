@@ -1,4 +1,4 @@
-/* 
+/*
     This module is used to log information and errors to the console,
     separated from the actual application logic.
     Extracting the logging functionality into its own module is a good
@@ -8,13 +8,17 @@
 
 // Prints normal log messages to the console
 const info = (...params) => {
-  console.log(...params);
-};
+  if (process.env.NODE_ENV !== 'test') {
+    console.log(...params)
+  }
+}
 
 // Prints error messages to the console
 const error = (...params) => {
-  console.error(...params);
-};
+  if (process.env.NODE_ENV !== 'test') {
+    console.error(...params)
+  }
+}
 
 /*
     This file exports an object that has two fields: info and error.
@@ -29,5 +33,5 @@ const error = (...params) => {
 */
 module.exports = {
   info,
-  error,
-};
+  error
+}
