@@ -1,0 +1,16 @@
+{
+    "overrides": [
+      {
+        "files": "*.js",
+        "options": {
+          "parser": "babel",
+          "tabWidth": 2,
+          "singleQuote": true,
+          "semi": false,
+          "trailingComma": "none",
+          "arrowParens": "avoid"
+        }
+      }
+    ]
+  }
+  
