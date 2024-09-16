@@ -7,6 +7,7 @@ const config = require('./utils/config')
 const express = require('express')
 const app = express()
 const cors = require('cors')
+require('express-async-errors') // let's us not need to explicitly write out try-catch blocks for error handling
 const notesRouter = require('./controllers/notes') // Must only define relative parts of routes
 const middleware = require('./utils/middleware')
 const logger = require('./utils/logger')
