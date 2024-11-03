@@ -12,6 +12,7 @@ const notesRouter = require('./controllers/notes') // Must only define relative 
 const middleware = require('./utils/middleware')
 const logger = require('./utils/logger')
 const mongoose = require('mongoose')
+const usersRouter = require('./controllers/users')
 
 mongoose.set('strictQuery', false)
 
@@ -31,7 +32,9 @@ app.use(express.static('dist'))
 app.use(express.json())
 app.use(middleware.requestLogger)
 
+// Note: THESE NEED TO BE DONE BEFORE YOU USE THE MIDDLEWARE FOR UNKNOWN ENDPOINT AND ERROR HANDLING
 app.use('/api/notes', notesRouter) // Note the path here
+app.use('/api/users', usersRouter)
 
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)

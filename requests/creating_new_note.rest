@@ -2,6 +2,7 @@ POST http://localhost:3001/api/notes
 Content-Type: application/json
 
 {
-    "content": "SOOOOOOO much backend testing",
-    "important": true
+    "content": "LeetCode is killing meeeee",
+    "important": true,
+    "userId": "6726d975fdf8079d68af12ef" 
 }

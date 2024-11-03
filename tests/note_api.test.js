@@ -9,6 +9,9 @@ const helper = require('./test_helper')
 
 const Note = require('../models/note')
 
+const bcrypt = require('bcrypt')
+const User = require('../models/user')
+
 describe('when there is initially some notes saved', () => {
   beforeEach(async () => {
     await Note.deleteMany({})
@@ -109,6 +112,62 @@ describe('when there is initially some notes saved', () => {
       const contents = notesAtEnd.map(r => r.content)
       assert(!contents.includes(noteToDelete.content))
     })
+  })
+})
+
+describe('When there is initially one user in the database', () => {
+  beforeEach(async () => {
+    await User.deleteMany({})
+
+    const passHash = await bcrypt.hash('oooosecret', 10)
+    const user = new User({
+      username: 'bean',
+      passHash
+    })
+
+    await user.save()
+  })
+
+  test('creation works with a new username', async () => {
+    const usersStart = await helper.usersInDb()
+
+    const newUser = {
+      username: 'swagmanmrswagman',
+      name: 'Mister Bean',
+      password: 'beanbean'
+    }
+
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    const usersEnd = await helper.usersInDb()
+    assert.strictEqual(usersEnd.length, usersStart.length + 1)
+
+    const usernames = usersEnd.map(u => u.username)
+    assert(usernames.includes(newUser.username))
+  })
+
+  test('creation does not work with an existing username', async () => {
+    const usersStart = await helper.usersInDb()
+
+    const newUser = {
+      username: 'bean',
+      name: 'swagUser',
+      password: 'beanbean'
+    }
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    const usersEnd = await helper.usersInDb()
+    assert(result.body.error.includes('expected `username` to be unique'))
+    assert.strictEqual(usersEnd.length, usersStart.length)
   })
 })
 
