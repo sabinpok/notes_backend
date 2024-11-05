@@ -1,8 +1,8 @@
 POST http://localhost:3001/api/notes
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvb3QiLCJpZCI6IjY3MjZkOTc1ZmRmODA3OWQ2OGFmMTJlZiIsImlhdCI6MTczMDc3Njk1NX0.fVLyJDW-dE7xQ93HBGKzNx-8VTVpz5O2To8Cb3PBRwE
 
 {
-    "content": "LeetCode is killing meeeee",
-    "important": true,
-    "userId": "6726d975fdf8079d68af12ef" 
+    "content": "tokens are too complex afffff",
+    "important": false
 }
